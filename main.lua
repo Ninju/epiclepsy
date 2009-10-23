@@ -3,14 +3,27 @@ game = display.newGroup()
 instructions = display.newGroup()
 
 -- Utilities
-local scenes = { menu, game, instructions }
-
 local selectScene = function( scene )
+  local scenes = { menu, game, instructions }
   for i = 1, #scenes do
     scenes[ i ].isVisible = scenes[ i ] == scene
   end
 end
--- end Utilities
+
+local createButton = function( options )
+  local newButton = display.newRoundedRect( 0, 0, options.width, options.height, options.height / 3 )
+  newButton.x = options.x
+  newButton.y = options.y
+  newButton:setFillColor( 30, 30, 200 )
+
+  buttonText = display.newText( options.text, 0, 0, nil, options.height / 2 )
+  buttonText.x = options.x
+  buttonText.y = options.y
+  buttonText:setTextColor( 255, 255, 255 )
+
+  return newButton, buttonText
+end
+-- End Utilities
 
 -- Menu Setup
 menu.title = display.newText( "Epic Lepsy", 0, 0, nil, 30 )
@@ -19,17 +32,13 @@ menu.title.y = 100
 menu.title:setTextColor( 255, 255, 255 )
 
 menu.createButton = function( self, text, callback )
-  local newButton = display.newRoundedRect( 0, 0, 150, 30, 10 )
-  local buttonText = display.newText( text, 0, 0, nil, 15 )
-  
-  newButton:setFillColor( 200, 200, 200 )
-  buttonText:setTextColor( 0, 0, 0 )
-
-  buttonText.x = display.stageWidth / 2
-  buttonText.y = 200 + ( self.numChildren - 1 ) * 30
-
-  newButton.x = display.stageWidth / 2
-  newButton.y = 200 + ( self.numChildren - 1 ) * 30
+  local newButton, buttonText = createButton{
+    x = display.stageWidth / 2,
+    y = 200 + ( self.numChildren - 1 ) * 30,
+    text = text,
+    width = 150,
+    height = 30
+  }
 
   self:insert( newButton )
   self:insert( buttonText )
@@ -50,32 +59,30 @@ menu:createButton( "Options", function() end )
 -- End Menu Setup
 
 -- Instructions setup
-local instructionsTitle = display.newText( "Instructions", 0, 0, nil, 30 )
-instructionsTitle.x = display.stageWidth / 2
-instructionsTitle.y = 50
-instructionsTitle:setTextColor( 255, 255, 255 )
+instructions.title = display.newText( "Instructions", 0, 0, nil, 30 )
+instructions.title.x = display.stageWidth / 2
+instructions.title.y = 50
+instructions.title:setTextColor( 255, 255, 255 )
 
-local instructionsText = display.newText( "try not to have a seizure", 0, 0, nil, 15 )
-instructionsText.x = display.stageWidth / 2
-instructionsText.y = 100
-instructionsText:setTextColor( 255, 255, 255 )
+instructions.text = display.newText( "try not to have a seizure", 0, 0, nil, 15 )
+instructions.text.x = display.stageWidth / 2
+instructions.text.y = 100
+instructions.text:setTextColor( 255, 255, 255 )
 
-local backButton = display.newRoundedRect( 0, 0, 50, 20, 5 )
-backButton.x = display.stageWidth - 45
-backButton.y = display.stageHeight - 30
-backButton:setFillColor( 255, 255, 255 )
+instructions.backButton, instructions.backButtonText = createButton{
+  text = "Back",
+  x = display.stageWidth - 45,
+  y = display.stageHeight - 30,
+  width = 50,
+  height = 20
+} 
 
-local backButtonText = display.newText( "Back", 0, 0, nil, 15 )
-backButtonText.x = display.stageWidth - 45
-backButtonText.y = display.stageHeight - 30
-backButtonText:setTextColor( 0, 0, 0 )
+instructions.backButton:addEventListener( "tap", menuSelectSceneCallback( menu ) )
 
-backButton:addEventListener( "tap", menuSelectSceneCallback( menu ) )
-
-instructions:insert( instructionsTitle )
-instructions:insert( instructionsText )
-instructions:insert( backButton )
-instructions:insert( backButtonText )
+instructions:insert( instructions.title )
+instructions:insert( instructions.text )
+instructions:insert( instructions.backButton )
+instructions:insert( instructions.backButtonText )
 -- End instructions
 
 
